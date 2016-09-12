@@ -10,6 +10,6 @@
   "license": "MIT",
   "dependencies": {
     "logplease": "^1.2.7",
-    "ipfs-api": "https://github.com/haadcode/js-ipfs-api.git",
+    "ipfs-api": "https://github.com/haadcode/js-ipfs-api.git"
   }
 }
