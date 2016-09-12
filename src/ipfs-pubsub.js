@@ -31,6 +31,13 @@ class IPFSPubsub {
       this._ipfs.pubsub.pub(hash, message)
   }
 
+  disconnect() {
+    Object.keys(this._subscriptions).forEach((e) => {
+      //this._subscriptions[e].stream.end() ???
+      delete this._subscriptions[e]
+    })
+  }
+
   _handleMessage(message) {
     if (message.data === '/connect')
       return
