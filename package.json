@@ -1,0 +1,15 @@
+{
+  "name": "orbit-db-pubsub",
+  "version": "0.0.1",
+  "description": "Message propagation module for orbit-db",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Haad",
+  "license": "MIT",
+  "dependencies": {
+    "logplease": "^1.2.7",
+    "ipfs-api": "https://github.com/haadcode/js-ipfs-api.git",
+  }
+}
