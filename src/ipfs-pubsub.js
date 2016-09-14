@@ -13,7 +13,11 @@ class IPFSPubsub {
     if(!this._subscriptions[hash]) {
       this._subscriptions[hash] = { onMessage: onMessageCallback }
       this._ipfs.pubsub.sub(hash, (err, stream) => {
-        stream.on('data', this._handleMessage.bind(this))
+        if (err)
+          logger.error(err)
+
+        if (stream)
+          stream.on('data', this._handleMessage.bind(this))
       })
       // FIXME: when js-ipfs-api returns the stream before the
       // first message has been received, this can be remove
