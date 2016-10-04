@@ -12,7 +12,7 @@ class IPFSPubsub {
   subscribe(hash, onMessageCallback) {
     if(!this._subscriptions[hash]) {
       this._subscriptions[hash] = { onMessage: onMessageCallback }
-      this._ipfs.pubsub.sub(hash, (err, stream) => {
+      this._ipfs.pubsub.sub(hash, { discover: true }, (err, stream) => {
         if (err)
           logger.error(err)
 
