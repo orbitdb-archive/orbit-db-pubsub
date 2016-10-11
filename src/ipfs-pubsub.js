@@ -1,6 +1,5 @@
 'use strict'
 
-const ipfsApi = require('ipfs-api')
 const logger = require('logplease').create("orbit-db.IPFSPubSub")
 
 class IPFSPubsub {
