@@ -11,7 +11,7 @@ class IPFSPubsub {
   subscribe(hash, onMessageCallback) {
     if(!this._subscriptions[hash]) {
       this._subscriptions[hash] = { onMessage: onMessageCallback }
-      this._ipfs.pubsub.sub(encodeURIComponent(hash), { discover: true }, (err, stream) => {
+      this._ipfs.pubsub.subscribe(encodeURIComponent(hash), { discover: true }, (err, stream) => {
         if (err)
           logger.error(err)
 
@@ -20,7 +20,7 @@ class IPFSPubsub {
       })
       // FIXME: when js-ipfs-api returns the stream before the
       // first message has been received, this can be remove
-      this._ipfs.pubsub.pub(encodeURIComponent(hash), '/connect')
+      this._ipfs.pubsub.publish(encodeURIComponent(hash), '/connect')
     }
   }
 
@@ -31,7 +31,7 @@ class IPFSPubsub {
 
   publish(hash, message) {
     if(this._subscriptions[hash])
-      this._ipfs.pubsub.pub(encodeURIComponent(hash), message)
+      this._ipfs.pubsub.publish(encodeURIComponent(hash), message)
   }
 
   disconnect() {
