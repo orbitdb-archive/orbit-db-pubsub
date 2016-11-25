@@ -2,6 +2,8 @@
 
 const logger = require('logplease').create("orbit-db.IPFSPubSub")
 
+// TODO: setup logging properly
+
 class IPFSPubsub {
   constructor(ipfs) {
     this._ipfs = ipfs
@@ -11,45 +13,42 @@ class IPFSPubsub {
   subscribe(hash, onMessageCallback) {
     if(!this._subscriptions[hash]) {
       this._subscriptions[hash] = { onMessage: onMessageCallback }
-      this._ipfs.pubsub.sub(encodeURIComponent(hash), { discover: true }, (err, stream) => {
+      this._ipfs.pubsub.subscribe(hash, { discover: true }, (err, stream) => {
         if (err)
           logger.error(err)
 
-        if (stream)
+        if (stream) {
           stream.on('data', this._handleMessage.bind(this))
+          // TODO: handle end of stream
+          // stream.on('end', () => console.log("Disconnected from pubsub"))
+        }
       })
-      // FIXME: when js-ipfs-api returns the stream before the
-      // first message has been received, this can be remove
-      this._ipfs.pubsub.pub(encodeURIComponent(hash), '/connect')
     }
   }
 
   unsubscribe(hash) {
-    if(this._subscriptions[hash])
+    if(this._subscriptions[hash]) {
+      this._subscriptions[e].cancel()
       delete this._subscriptions[hash]
+    }
   }
 
   publish(hash, message) {
     if(this._subscriptions[hash])
-      this._ipfs.pubsub.pub(encodeURIComponent(hash), message)
+      this._ipfs.pubsub.publish(hash, message)
   }
 
   disconnect() {
-    Object.keys(this._subscriptions).forEach((e) => {
-      //this._subscriptions[e].stream.end() ???
-      delete this._subscriptions[e]
-    })
+    Object.keys(this._subscriptions)
+      .forEach((e) => this.unsubscribe(e))
   }
 
   _handleMessage(message) {
-    if (message.data === '/connect')
-      return
-
     const hash = message.topicIDs[0]
-    const sub = this._subscriptions[hash]
+    const subscription = this._subscriptions[hash]
 
-    if(sub && sub.onMessage) {
-      sub.onMessage(hash, message.data)
+    if(subscription && subscription.onMessage) {
+      subscription.onMessage(hash, message.data)
     }
   }
 }
