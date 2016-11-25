@@ -28,7 +28,7 @@ class IPFSPubsub {
 
   unsubscribe(hash) {
     if(this._subscriptions[hash]) {
-      this._subscriptions[e].cancel()
+      this._subscriptions[hash].cancel()
       delete this._subscriptions[hash]
     }
   }
