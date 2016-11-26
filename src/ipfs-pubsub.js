@@ -17,7 +17,8 @@ class IPFSPubsub {
         if (err)
           logger.error(err)
 
-        if (stream) {
+        if (stream && this._subscriptions[hash]) {
+          this._subscriptions[hash].stream = stream
           stream.on('data', this._handleMessage.bind(this))
           // TODO: handle end of stream
           // stream.on('end', () => console.log("Disconnected from pubsub"))
@@ -28,7 +29,9 @@ class IPFSPubsub {
 
   unsubscribe(hash) {
     if(this._subscriptions[hash]) {
-      this._subscriptions[hash].cancel()
+      if (this._subscriptions[hash].stream)
+        this._subscriptions[hash].stream.cancel()
+
       delete this._subscriptions[hash]
     }
   }
