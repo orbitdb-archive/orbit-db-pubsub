@@ -57,10 +57,11 @@ class IPFSPubsub {
 
   _handleMessage(message) {
     const hash = message.topicIDs[0]
+    const data = message.data.toString()
     const subscription = this._subscriptions[hash]
 
-    if(subscription && subscription.onMessage) {
-      subscription.onMessage(hash, message.data)
+    if(subscription && subscription.onMessage && data) {
+      subscription.onMessage(hash, data)
     }
   }
 }
