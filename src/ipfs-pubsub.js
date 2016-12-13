@@ -1,7 +1,8 @@
 'use strict'
 
-const logger = require('logplease').create("orbit-db.ipfs-pubsub")
-logger.setLogLevel('ERROR')
+const Logger = require('logplease')
+const logger = Logger.create("orbit-db.ipfs-pubsub")
+Logger.setLogLevel('ERROR')
 
 class IPFSPubsub {
   constructor(ipfs) {
