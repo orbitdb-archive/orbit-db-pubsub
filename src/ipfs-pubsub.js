@@ -17,29 +17,14 @@ class IPFSPubsub {
     if(!this._subscriptions[hash]) {
       this._subscriptions[hash] = { onMessage: onMessageCallback }
 
-      if (this._ipfs.pubsub) {
-        this._ipfs.pubsub.subscribe(hash, { discover: true }, (err, stream) => {
-          if (err)
-            logger.error(err)
-
-          logger.debug(`Subscribed to '${hash}'`)
-
-          if (stream && this._subscriptions[hash]) {
-            this._subscriptions[hash].stream = stream
-            stream.on('data', this._handleMessage.bind(this))
-            // TODO: handle end of stream
-            // stream.on('end', () => console.log("Disconnected from pubsub"))
-          }
-        })
-      }
+      if (this._ipfs.pubsub)
+        this._ipfs.pubsub.subscribe(hash, { discover: true }, this._handleMessage.bind(this))
     }
   }
 
   unsubscribe(hash) {
     if(this._subscriptions[hash]) {
-      if (this._subscriptions[hash].stream)
-        this._subscriptions[hash].stream.cancel()
-
+      this._ipfs.pubsub.unsubscribe(hash, this._handleMessage)
       delete this._subscriptions[hash]
       logger.debug(`Unsubscribed from '${hash}'`)
     }
@@ -47,7 +32,7 @@ class IPFSPubsub {
 
   publish(hash, message) {
     if(this._subscriptions[hash] && this._ipfs.pubsub)
-      this._ipfs.pubsub.publish(hash, message)
+      this._ipfs.pubsub.publish(hash, new Buffer(message))
   }
 
   disconnect() {
@@ -56,13 +41,12 @@ class IPFSPubsub {
   }
 
   _handleMessage(message) {
-    const hash = message.topicIDs[0]
+    const hash = message.topicCIDs[0]
     const data = message.data.toString()
     const subscription = this._subscriptions[hash]
 
-    if(subscription && subscription.onMessage && data) {
+    if(subscription && subscription.onMessage && data)
       subscription.onMessage(hash, data)
-    }
   }
 }
 
