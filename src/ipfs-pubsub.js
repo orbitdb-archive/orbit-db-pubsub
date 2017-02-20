@@ -32,7 +32,7 @@ class IPFSPubsub {
 
   publish(hash, message) {
     if(this._subscriptions[hash] && this._ipfs.pubsub)
-      this._ipfs.pubsub.publish(hash, new Buffer(message))
+      this._ipfs.pubsub.publish(hash, new Buffer(JSON.stringify(message)))
   }
 
   disconnect() {
@@ -42,7 +42,7 @@ class IPFSPubsub {
 
   _handleMessage(message) {
     const hash = message.topicCIDs[0]
-    const data = message.data.toString()
+    const data = JSON.parse(message.data.toString())
     const subscription = this._subscriptions[hash]
 
     if(subscription && subscription.onMessage && data)
