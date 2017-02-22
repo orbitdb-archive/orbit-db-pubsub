@@ -41,6 +41,10 @@ class IPFSPubsub {
   }
 
   _handleMessage(message) {
+    // Don't process our own messages
+    if (message.from === this._ipfs.PeerId)
+      return
+
     const hash = message.topicCIDs[0]
     const data = JSON.parse(message.data.toString())
     const subscription = this._subscriptions[hash]
