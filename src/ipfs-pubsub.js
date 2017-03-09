@@ -11,6 +11,8 @@ class IPFSPubsub {
 
     if (this._ipfs.pubsub === null)
       logger.error("The provided version of ipfs doesn't have pubsub support. Messages will not be exchanged.")
+
+    this._handleMessage = this._handleMessage.bind(this)
   }
 
   subscribe(hash, onMessageCallback) {
@@ -18,7 +20,7 @@ class IPFSPubsub {
       this._subscriptions[hash] = { onMessage: onMessageCallback }
 
       if (this._ipfs.pubsub)
-        this._ipfs.pubsub.subscribe(hash, { discover: true }, this._handleMessage.bind(this))
+        this._ipfs.pubsub.subscribe(hash, { discover: true }, this._handleMessage)
     }
   }
 
@@ -38,6 +40,8 @@ class IPFSPubsub {
   disconnect() {
     Object.keys(this._subscriptions)
       .forEach((e) => this.unsubscribe(e))
+
+    this._subscriptions = {}
   }
 
   _handleMessage(message) {
