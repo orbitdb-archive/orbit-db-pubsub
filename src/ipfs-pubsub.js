@@ -5,8 +5,9 @@ const logger = Logger.create("orbit-db.ipfs-pubsub")
 Logger.setLogLevel('ERROR')
 
 class IPFSPubsub {
-  constructor(ipfs) {
+  constructor(ipfs, id) {
     this._ipfs = ipfs
+    this._id = id
     this._subscriptions = {}
 
     if (this._ipfs.pubsub === null)
@@ -46,7 +47,7 @@ class IPFSPubsub {
 
   _handleMessage(message) {
     // Don't process our own messages
-    if (message.from === this._ipfs.PeerId)
+    if (message.from === this._id)
       return
 
     const hash = message.topicCIDs[0]
