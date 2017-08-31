@@ -51,7 +51,7 @@ class IPFSPubsub {
       return
 
     const hash = message.topicCIDs[0]
-    const data = JSON.parse(message.data.toString())
+    const data = JSON.parse(message.data)
     const subscription = this._subscriptions[hash]
 
     if(subscription && subscription.onMessage && data)
