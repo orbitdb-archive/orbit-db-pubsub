@@ -9,6 +9,6 @@
   "author": "Haad",
   "license": "MIT",
   "dependencies": {
-    "logplease": "^1.2.9"
+    "logplease": "~1.2.14"
   }
 }

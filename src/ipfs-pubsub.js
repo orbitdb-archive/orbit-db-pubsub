@@ -21,7 +21,9 @@ class IPFSPubsub {
       this._subscriptions[hash] = { onMessage: onMessageCallback }
 
       if (this._ipfs.pubsub)
-        this._ipfs.pubsub.subscribe(hash, { discover: true }, this._handleMessage)
+        this._ipfs.pubsub.subscribe(hash, { discover: true }, this._handleMessage, (err, res) => {
+          if (err) throw err
+        })
     }
   }
 
