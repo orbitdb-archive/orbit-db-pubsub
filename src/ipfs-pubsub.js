@@ -1,8 +1,13 @@
 'use strict'
 
+const Room = require('ipfs-pubsub-room')
+
 const Logger = require('logplease')
 const logger = Logger.create("orbit-db.ipfs-pubsub")
 Logger.setLogLevel('ERROR')
+
+const maxTopicsOpen = 256
+let topicsOpenCount = 0
 
 class IPFSPubsub {
   constructor(ipfs, id) {
@@ -14,30 +19,56 @@ class IPFSPubsub {
       logger.error("The provided version of ipfs doesn't have pubsub support. Messages will not be exchanged.")
 
     this._handleMessage = this._handleMessage.bind(this)
+
+    // Bump up the number of listeners we can have open,
+    // ie. number of databases replicating
+    this._ipfs.setMaxListeners(maxTopicsOpen)
   }
 
-  subscribe(hash, onMessageCallback) {
-    if(!this._subscriptions[hash]) {
-      this._subscriptions[hash] = { onMessage: onMessageCallback }
+  subscribe(topic, onMessageCallback, onNewPeerCallback) {
+    if(!this._subscriptions[topic]) {
+      const room = Room(this._ipfs, topic)
 
-      if (this._ipfs.pubsub)
-        this._ipfs.pubsub.subscribe(hash, { discover: true }, this._handleMessage, (err, res) => {
-          if (err) throw err
-        })
+      room.on('error', (e) => {
+        logger.error("Pubsub Error:", e)
+      })
+
+      room.on('message', (message) => {
+        this._handleMessage(message)
+      })
+
+      room.on('peer joined', (peer) => {
+        this._subscriptions[topic].onNewPeer(topic, peer, room)
+      })
+
+      room.on('subscribed', () => {
+        this._subscriptions[topic] = { 
+          room: room, 
+          onMessage: onMessageCallback, 
+          onNewPeer: onNewPeerCallback 
+        }
+        topicsOpenCount ++
+        logger.debug("Topics open:", topicsOpenCount)
+      })
+
     }
   }
 
   unsubscribe(hash) {
     if(this._subscriptions[hash]) {
-      this._ipfs.pubsub.unsubscribe(hash, this._handleMessage)
+      this._subscriptions[hash].room.leave()
+      this._subscriptions[hash].room = null
       delete this._subscriptions[hash]
       logger.debug(`Unsubscribed from '${hash}'`)
+      topicsOpenCount --
+      logger.debug("Topics open:", topicsOpenCount)
     }
   }
 
   publish(hash, message) {
-    if(this._subscriptions[hash] && this._ipfs.pubsub)
-      this._ipfs.pubsub.publish(hash, new Buffer(JSON.stringify(message)))
+    if(this._subscriptions[hash] && this._subscriptions[hash].room && this._ipfs.pubsub) {
+      this._subscriptions[hash].room.broadcast(new Buffer(JSON.stringify(message)))
+    }
   }
 
   disconnect() {
@@ -47,17 +78,27 @@ class IPFSPubsub {
     this._subscriptions = {}
   }
 
+
   _handleMessage(message) {
     // Don't process our own messages
     if (message.from === this._id)
       return
 
-    const hash = message.topicCIDs[0]
-    const data = JSON.parse(message.data)
-    const subscription = this._subscriptions[hash]
+    // Get the topic
+    const topicId = message.topicCIDs[0]
 
-    if(subscription && subscription.onMessage && data)
-      subscription.onMessage(hash, data)
+    // Get the message content and a subscription
+    let content, subscription
+    try {
+      content = JSON.parse(message.data)
+      subscription = this._subscriptions[topicId]
+    } catch (e) {
+      console.error('Couldn\'t parse pubsub message:', message.data)
+    }
+
+    if(subscription && subscription.onMessage && content) {
+      subscription.onMessage(topicId, content)
+    }
   }
 }
 
