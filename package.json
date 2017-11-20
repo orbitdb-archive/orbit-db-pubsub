@@ -9,6 +9,7 @@
   "author": "Haad",
   "license": "MIT",
   "dependencies": {
+    "ipfs-pubsub-room": "haadcode/ipfs-pubsub-room#fix/race-on-start",
     "logplease": "~1.2.14"
   }
 }
