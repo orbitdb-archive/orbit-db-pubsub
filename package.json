@@ -9,7 +9,7 @@
   "author": "Haad",
   "license": "MIT",
   "dependencies": {
-    "ipfs-pubsub-room": "haadcode/ipfs-pubsub-room#fix/race-on-start",
+    "ipfs-pubsub-room": "https://github.com/haadcode/ipfs-pubsub-room#fix-race-for-orbitdb",
     "logplease": "~1.2.14"
   }
 }
