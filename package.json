@@ -9,7 +9,7 @@
   "author": "Haad",
   "license": "MIT",
   "dependencies": {
-    "ipfs-pubsub-room": "haadcode/ipfs-pubsub-room#fix/direct-messges-in-room",
+    "ipfs-pubsub-room": "~1.0.1",
     "logplease": "~1.2.14"
   }
 }
