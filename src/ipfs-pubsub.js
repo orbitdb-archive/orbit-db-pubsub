@@ -84,16 +84,16 @@ class IPFSPubsub {
     if (message.from === this._id)
       return
 
-    // Get the topic
-    const topicId = message.topicCIDs[0]
-
     // Get the message content and a subscription
-    let content, subscription
+    let content, subscription, topicId
     try {
+      // Get the topic
+      topicId = message.topicIDs[0]
       content = JSON.parse(message.data)
       subscription = this._subscriptions[topicId]
     } catch (e) {
-      console.error('Couldn\'t parse pubsub message:', message.data)
+      logger.error(e)
+      logger.error('Couldn\'t parse pubsub message:', message)
     }
 
     if(subscription && subscription.onMessage && content) {
