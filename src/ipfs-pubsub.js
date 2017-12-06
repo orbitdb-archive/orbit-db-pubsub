@@ -22,7 +22,8 @@ class IPFSPubsub {
 
     // Bump up the number of listeners we can have open,
     // ie. number of databases replicating
-    this._ipfs.setMaxListeners(maxTopicsOpen)
+    if (this._ipfs.setMaxListeners)
+      this._ipfs.setMaxListeners(maxTopicsOpen)
   }
 
   subscribe(topic, onMessageCallback, onNewPeerCallback) {
@@ -67,7 +68,7 @@ class IPFSPubsub {
 
   publish(hash, message) {
     if(this._subscriptions[hash] && this._subscriptions[hash].room && this._ipfs.pubsub) {
-      this._subscriptions[hash].room.broadcast(new Buffer(JSON.stringify(message)))
+      this._subscriptions[hash].room.broadcast(Buffer.from(JSON.stringify(message)))
     }
   }
 
