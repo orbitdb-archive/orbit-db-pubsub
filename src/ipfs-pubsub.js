@@ -39,7 +39,13 @@ class IPFSPubsub {
       })
 
       room.on('peer joined', (peer) => {
-        this._subscriptions[topic].onNewPeer(topic, peer, room)
+        logger.debug("Peer connected:", topic, topic === room._topic)
+        if (this._subscriptions[topic]) {
+          this._subscriptions[topic].onNewPeer(topic, peer, room)
+        } else {
+          logger.warn('Peer joined a room we don\'t have a subscription for')
+          logger.warn(peer, room._topic, topic)
+        }
       })
 
       room.on('subscribed', () => {
