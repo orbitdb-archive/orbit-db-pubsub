@@ -9,7 +9,7 @@
   "author": "Haad",
   "license": "MIT",
   "dependencies": {
-    "ipfs-pubsub-room": "github:haadcode/ipfs-pubsub-room#orbitdb",
+    "ipfs-pubsub-room": "github:haadcode/ipfs-pubsub-room#fix/ipfs-api",
     "logplease": "~1.2.14"
   }
 }
