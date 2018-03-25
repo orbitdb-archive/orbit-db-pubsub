@@ -9,7 +9,7 @@
   "author": "Haad",
   "license": "MIT",
   "dependencies": {
-    "ipfs-pubsub-room": "~1.2.0",
+    "ipfs-pubsub-peer-monitor": "0.0.1",
     "logplease": "~1.2.14"
   }
 }
