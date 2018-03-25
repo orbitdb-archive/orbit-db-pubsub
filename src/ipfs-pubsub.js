@@ -1,9 +1,9 @@
 'use strict'
 
-const Room = require('ipfs-pubsub-room')
+const PeerMonitor = require('ipfs-pubsub-peer-monitor')
 
 const Logger = require('logplease')
-const logger = Logger.create("orbit-db.ipfs-pubsub")
+const logger = Logger.create("pubsub", { color: Logger.Colors.Yellow })
 Logger.setLogLevel('ERROR')
 
 const maxTopicsOpen = 256
@@ -27,44 +27,42 @@ class IPFSPubsub {
   }
 
   subscribe(topic, onMessageCallback, onNewPeerCallback) {
-    if(!this._subscriptions[topic]) {
-      const room = Room(this._ipfs, topic)
+    if(!this._subscriptions[topic] && this._ipfs.pubsub) {
+      this._ipfs.pubsub.subscribe(topic, this._handleMessage, (err, res) => {
+        if (err) throw err
 
-      room.on('error', (e) => {
-        logger.error("Pubsub Error:", e)
-      })
+        const topicMonitor = new PeerMonitor(this._ipfs.pubsub, topic)
 
-      room.on('message', (message) => {
-        this._handleMessage(message)
-      })
+        topicMonitor.on('join', (peer) => {
+          logger.debug(`Peer joined ${topic}:`)
+          logger.debug(peer)
+          if (this._subscriptions[topic]) {
+            onNewPeerCallback(topic, peer)
+          } else {
+            logger.warn('Peer joined a room we don\'t have a subscription for')
+            logger.warn(topic, peer)
+          }
+        })
 
-      room.on('peer joined', (peer) => {
-        logger.debug("Peer connected:", topic, topic === room._topic)
-        if (this._subscriptions[topic]) {
-          this._subscriptions[topic].onNewPeer(topic, peer, room)
-        } else {
-          logger.warn('Peer joined a room we don\'t have a subscription for')
-          logger.warn(peer, room._topic, topic)
-        }
-      })
+        topicMonitor.on('leave', (peer) => logger.debug(`Peer ${peer} left ${topic}`))
+        topicMonitor.on('error', (e) => logger.error(e))
 
-      room.on('subscribed', () => {
-        this._subscriptions[topic] = { 
-          room: room, 
-          onMessage: onMessageCallback, 
+        this._subscriptions[topic] = {
+          topicMonitor: topicMonitor,
+          onMessage: onMessageCallback,
           onNewPeer: onNewPeerCallback 
         }
+
         topicsOpenCount ++
         logger.debug("Topics open:", topicsOpenCount)
       })
-
     }
   }
 
   unsubscribe(hash) {
     if(this._subscriptions[hash]) {
-      this._subscriptions[hash].room.leave()
-      this._subscriptions[hash].room = null
+      this._ipfs.pubsub.unsubscribe(hash, this._handleMessage)
+      this._subscriptions[hash].topicMonitor.stop()
       delete this._subscriptions[hash]
       logger.debug(`Unsubscribed from '${hash}'`)
       topicsOpenCount --
@@ -72,9 +70,9 @@ class IPFSPubsub {
     }
   }
 
-  publish(hash, message) {
-    if(this._subscriptions[hash] && this._subscriptions[hash].room && this._ipfs.pubsub) {
-      this._subscriptions[hash].room.broadcast(Buffer.from(JSON.stringify(message)))
+  publish(topic, message) {
+    if(this._subscriptions[topic] && this._ipfs.pubsub) {
+      this._ipfs.pubsub.publish(topic, Buffer.from(JSON.stringify(message)))
     }
   }
 
