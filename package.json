@@ -1,6 +1,6 @@
 {
   "name": "orbit-db-pubsub",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Message propagation module for orbit-db",
   "main": "index.js",
   "scripts": {
