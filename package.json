@@ -10,6 +10,7 @@
   "license": "MIT",
   "dependencies": {
     "ipfs-pubsub-peer-monitor": "~0.0.5",
-    "logplease": "~1.2.14"
+    "logplease": "~1.2.14",
+    "p-series": "^1.1.0"
   }
 }
