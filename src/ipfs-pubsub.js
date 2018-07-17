@@ -77,7 +77,7 @@ class IPFSPubsub {
 
   async disconnect() {
     const topics = Object.keys(this._subscriptions)
-    await pSeries(topics.map(this.unsubscribe))
+    await pSeries(topics.map((t) => this.unsubscribe.bind(this, t)))
     this._subscriptions = {}
   }
 
