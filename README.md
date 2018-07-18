@@ -11,15 +11,27 @@ npm install orbit-db-pubsub
 
 ### API
 
-#### subscribe(topic, callback)
+#### subscribe(topic, onMessageHandler, onNewPeerHandler)
 
 Listen for new messages in `topic`
 
-`callback` gets called when a message is received with signature `(topic, data)`
+`onMessageHandler` gets called when a message is received with signature `(topic, data)`
+
+`onNewPeerHandler` gets called when a new peer joins with signature `(topic, peer)`
+
+Returns a promise.
 
 #### unsubscribe(topic)
 
 Stop listening for new messages in `topic`
+
+Returns a promise.
+
+#### disconnect ()
+
+Stop listening for new messages in all topics
+
+Returns a promise.
 
 #### publish(topic, data)
 
