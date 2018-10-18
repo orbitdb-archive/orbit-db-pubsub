@@ -99,7 +99,7 @@ class IPFSPubsub {
     }
 
     if(subscription && subscription.onMessage && content) {
-      await subscription.onMessage(topicId, content)
+      await subscription.onMessage(topicId, content, message.from)
     }
   }
 }
