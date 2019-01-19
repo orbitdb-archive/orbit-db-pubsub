@@ -1,11 +1,17 @@
 # orbit-db-pubsub
 
+[![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg)](https://gitter.im/orbitdb/Lobby)
 [![npm version](https://badge.fury.io/js/orbit-db-pubsub.svg)](https://badge.fury.io/js/orbit-db-pubsub)
 
-Default message propagation service for [orbit-db](https://github.com/haadcode/orbit-db). Uses [IPFS](https://dist.ipfs.io/go-ipfs/floodsub-2) [pubsub](https://github.com/ipfs/go-ipfs/blob/master/core/commands/pubsub.go#L23).
+> Message propagation module for orbit-db
+
+Default message propagation service for [orbit-db](https://github.com/orbitdb/orbit-db). Uses [IPFS](https://dist.ipfs.io/go-ipfs/floodsub-2) [pubsub](https://github.com/ipfs/go-ipfs/blob/master/core/commands/pubsub.go#L23).
 
 # Install
-```
+
+This project uses [npm](http://npmjs.com/) and [nodejs](https://nodejs.org/).
+
+```sh
 npm install orbit-db-pubsub
 ```
 
@@ -39,7 +45,9 @@ Publish `data` to a `topic`
 
 ## Contributing
 
-See [orbit-db's contributing guideline](https://github.com/haadcode/orbit-db#contributing).
+If you think this could be better, please [open an issue](https://github.com/orbitdb/orbit-db-pubsub/issues/new)!
+
+Please note that all interactions in [@orbitdb](https://github.com/orbitdb) fall under our [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## License
 
