@@ -1,6 +1,6 @@
 # orbit-db-pubsub
 
-[![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg)](https://gitter.im/orbitdb/Lobby)
+[![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg)](https://gitter.im/orbitdb/Lobby) [![Matrix](https://img.shields.io/badge/matrix-%23orbitdb%3Apermaweb.io-blue.svg)](https://riot.permaweb.io/#/room/#orbitdb:permaweb.io) [![Discord](https://img.shields.io/discord/475789330380488707?color=blueviolet&label=discord)](https://discord.gg/cscuf5T)
 [![npm version](https://badge.fury.io/js/orbit-db-pubsub.svg)](https://badge.fury.io/js/orbit-db-pubsub)
 
 > Message propagation module for orbit-db
@@ -14,6 +14,8 @@ This project uses [npm](http://npmjs.com/) and [nodejs](https://nodejs.org/).
 ```sh
 npm install orbit-db-pubsub
 ```
+
+## Usage
 
 ### API
 
