@@ -26,5 +26,10 @@
     "ipfs-pubsub-peer-monitor": "~0.0.5",
     "logplease": "~1.2.14",
     "p-series": "^1.1.0"
-  }
+  },
+  "localMaintainers": [
+    "haad <haad@haja.io>",
+    "shamb0t <shams@haja.io>",
+    "hajamark <mark@haja.io>"
+  ]
 }
