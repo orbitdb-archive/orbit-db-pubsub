@@ -27,9 +27,9 @@ class IPFSPubsub {
       this._ipfs.setMaxListeners(maxTopicsOpen)
   }
 
-  async subscribe(topic, onMessageCallback, onNewPeerCallback) {
+  async subscribe(topic, onMessageCallback, onNewPeerCallback, options = {}) {
     if(!this._subscriptions[topic] && this._ipfs.pubsub) {
-      await this._ipfs.pubsub.subscribe(topic, this._handleMessage)
+      await this._ipfs.pubsub.subscribe(topic, this._handleMessage, options)
 
       const topicMonitor = new PeerMonitor(this._ipfs.pubsub, topic)
 
@@ -69,9 +69,9 @@ class IPFSPubsub {
     }
   }
 
-  publish(topic, message) {
+  publish(topic, message, options = {}) {
     if(this._subscriptions[topic] && this._ipfs.pubsub) {
-      this._ipfs.pubsub.publish(topic, Buffer.from(JSON.stringify(message)))
+      this._ipfs.pubsub.publish(topic, Buffer.from(JSON.stringify(message)), options)
     }
   }
 
