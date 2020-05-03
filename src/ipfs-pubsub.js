@@ -71,11 +71,12 @@ class IPFSPubsub {
 
   publish(topic, message, options = {}) {
     if (this._subscriptions[topic] && this._ipfs.pubsub) {
-      var payload;
-      if(typeof message === "object") {
-        payload = JSON.stringify(message);
-      } else {
+      let payload;
+      //Buffer should be already serialized. Everything else will get serialized as json if not buffer, string.
+      if(Buffer.isBuffer(message) | typeof message === "string") {
         payload = message;
+      } else {
+        payload = JSON.stringify(message);
       }
       this._ipfs.pubsub.publish(topic, Buffer.from(payload), options)
     }
