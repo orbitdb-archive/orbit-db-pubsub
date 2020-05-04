@@ -70,8 +70,15 @@ class IPFSPubsub {
   }
 
   publish(topic, message, options = {}) {
-    if(this._subscriptions[topic] && this._ipfs.pubsub) {
-      this._ipfs.pubsub.publish(topic, Buffer.from(JSON.stringify(message)), options)
+    if (this._subscriptions[topic] && this._ipfs.pubsub) {
+      let payload;
+      //Buffer should be already serialized. Everything else will get serialized as json if not buffer, string.
+      if(Buffer.isBuffer(message) | typeof message === "string") {
+        payload = message;
+      } else {
+        payload = JSON.stringify(message);
+      }
+      this._ipfs.pubsub.publish(topic, Buffer.from(payload), options)
     }
   }
 
@@ -88,15 +95,15 @@ class IPFSPubsub {
 
     // Get the message content and a subscription
     let content, subscription, topicId
+
+    // Get the topic
+    topicId = message.topicIDs[0]
     try {
-      // Get the topic
-      topicId = message.topicIDs[0]
       content = JSON.parse(message.data)
-      subscription = this._subscriptions[topicId]
-    } catch (e) {
-      logger.error(e)
-      logger.error('Couldn\'t parse pubsub message:', message)
+    } catch {
+      content = message.data; //Leave content alone. Meant for higher level code using custom serialization.
     }
+    subscription = this._subscriptions[topicId]
 
     if(subscription && subscription.onMessage && content) {
       await subscription.onMessage(topicId, content, message.from)
