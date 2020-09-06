@@ -99,7 +99,7 @@ class IPFSPubsub {
     // Get the topic
     topicId = message.topicIDs[0]
     try {
-      content = JSON.parse(message.data)
+      content = JSON.parse(Buffer.from(message.data).toString())
     } catch {
       content = message.data; //Leave content alone. Meant for higher level code using custom serialization.
     }
