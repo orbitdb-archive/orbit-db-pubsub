@@ -10,6 +10,10 @@
     "orbit-db",
     "pubsub"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/orbitdb/orbit-db-pubsub.git",
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
