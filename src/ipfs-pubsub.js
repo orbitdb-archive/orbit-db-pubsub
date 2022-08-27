@@ -97,7 +97,7 @@ class IPFSPubsub {
     let content, subscription, topicId
 
     // Get the topic
-    topicId = message.topicIDs[0]
+    topicId = message.topic
     try {
       content = JSON.parse(Buffer.from(message.data).toString())
     } catch {
