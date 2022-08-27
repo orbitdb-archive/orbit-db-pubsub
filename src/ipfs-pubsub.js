@@ -4,31 +4,29 @@ const pSeries = require('p-series')
 const PeerMonitor = require('ipfs-pubsub-peer-monitor')
 
 const Logger = require('logplease')
-const logger = Logger.create("pubsub", { color: Logger.Colors.Yellow })
+const logger = Logger.create('pubsub', { color: Logger.Colors.Yellow })
 Logger.setLogLevel('ERROR')
 
 const maxTopicsOpen = 256
 let topicsOpenCount = 0
 
 class IPFSPubsub {
-  constructor(ipfs, id) {
+  constructor (ipfs, id) {
     this._ipfs = ipfs
     this._id = id
     this._subscriptions = {}
 
-    if (this._ipfs.pubsub === null)
-      logger.error("The provided version of ipfs doesn't have pubsub support. Messages will not be exchanged.")
+    if (this._ipfs.pubsub === null) { logger.error("The provided version of ipfs doesn't have pubsub support. Messages will not be exchanged.") }
 
     this._handleMessage = this._handleMessage.bind(this)
 
     // Bump up the number of listeners we can have open,
     // ie. number of databases replicating
-    if (this._ipfs.setMaxListeners)
-      this._ipfs.setMaxListeners(maxTopicsOpen)
+    if (this._ipfs.setMaxListeners) { this._ipfs.setMaxListeners(maxTopicsOpen) }
   }
 
-  async subscribe(topic, onMessageCallback, onNewPeerCallback, options = {}) {
-    if(!this._subscriptions[topic] && this._ipfs.pubsub) {
+  async subscribe (topic, onMessageCallback, onNewPeerCallback, options = {}) {
+    if (!this._subscriptions[topic] && this._ipfs.pubsub) {
       await this._ipfs.pubsub.subscribe(topic, this._handleMessage, options)
 
       const topicMonitor = new PeerMonitor(this._ipfs.pubsub, topic)
@@ -48,64 +46,63 @@ class IPFSPubsub {
       topicMonitor.on('error', (e) => logger.error(e))
 
       this._subscriptions[topic] = {
-        topicMonitor: topicMonitor,
+        topicMonitor,
         onMessage: onMessageCallback,
         onNewPeer: onNewPeerCallback
       }
 
-      topicsOpenCount ++
-      logger.debug("Topics open:", topicsOpenCount)
+      topicsOpenCount++
+      logger.debug('Topics open:', topicsOpenCount)
     }
   }
 
-  async unsubscribe(hash) {
-    if(this._subscriptions[hash]) {
+  async unsubscribe (hash) {
+    if (this._subscriptions[hash]) {
       await this._ipfs.pubsub.unsubscribe(hash, this._handleMessage)
       this._subscriptions[hash].topicMonitor.stop()
       delete this._subscriptions[hash]
       logger.debug(`Unsubscribed from '${hash}'`)
-      topicsOpenCount --
-      logger.debug("Topics open:", topicsOpenCount)
+      topicsOpenCount--
+      logger.debug('Topics open:', topicsOpenCount)
     }
   }
 
-  publish(topic, message, options = {}) {
+  publish (topic, message, options = {}) {
     if (this._subscriptions[topic] && this._ipfs.pubsub) {
-      let payload;
-      //Buffer should be already serialized. Everything else will get serialized as json if not buffer, string.
-      if(Buffer.isBuffer(message) | typeof message === "string") {
-        payload = message;
+      let payload
+      // Buffer should be already serialized. Everything else will get serialized as json if not buffer, string.
+      if (Buffer.isBuffer(message) | typeof message === 'string') {
+        payload = message
       } else {
-        payload = JSON.stringify(message);
+        payload = JSON.stringify(message)
       }
       this._ipfs.pubsub.publish(topic, Buffer.from(payload), options)
     }
   }
 
-  async disconnect() {
+  async disconnect () {
     const topics = Object.keys(this._subscriptions)
     await pSeries(topics.map((t) => this.unsubscribe.bind(this, t)))
     this._subscriptions = {}
   }
 
-  async _handleMessage(message) {
+  async _handleMessage (message) {
     // Don't process our own messages
-    if (message.from === this._id)
-      return
+    if (message.from === this._id) { return }
 
     // Get the message content and a subscription
-    let content, subscription, topicId
+    let content
 
     // Get the topic
-    topicId = message.topic
+    const topicId = message.topic
     try {
       content = JSON.parse(Buffer.from(message.data).toString())
     } catch {
-      content = message.data; //Leave content alone. Meant for higher level code using custom serialization.
+      content = message.data // Leave content alone. Meant for higher level code using custom serialization.
     }
-    subscription = this._subscriptions[topicId]
+    const subscription = this._subscriptions[topicId]
 
-    if(subscription && subscription.onMessage && content) {
+    if (subscription && subscription.onMessage && content) {
       await subscription.onMessage(topicId, content, message.from)
     }
   }

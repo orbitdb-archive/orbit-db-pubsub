@@ -11,7 +11,8 @@
     "pubsub"
   ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "standard"
   },
   "author": "Haad",
   "contributors": [
@@ -31,5 +32,8 @@
     "haad <haad@haja.io>",
     "shamb0t <shams@haja.io>",
     "hajamark <mark@haja.io>"
-  ]
+  ],
+  "devDependencies": {
+    "standard": "^17.0.0"
+  }
 }
