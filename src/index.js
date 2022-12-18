@@ -1,16 +1,14 @@
-'use strict'
+import pSeries from 'p-series'
+import PeerMonitor from 'ipfs-pubsub-peer-monitor'
+import Logger from 'logplease'
 
-const pSeries = require('p-series')
-const PeerMonitor = require('ipfs-pubsub-peer-monitor')
-
-const Logger = require('logplease')
 const logger = Logger.create('pubsub', { color: Logger.Colors.Yellow })
 Logger.setLogLevel('ERROR')
 
 const maxTopicsOpen = 256
 let topicsOpenCount = 0
 
-class IPFSPubsub {
+export default class IPFSPubsub {
   constructor (ipfs, id) {
     this._ipfs = ipfs
     this._id = id
@@ -107,5 +105,3 @@ class IPFSPubsub {
     }
   }
 }
-
-module.exports = IPFSPubsub

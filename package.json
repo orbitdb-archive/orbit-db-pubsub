@@ -2,7 +2,8 @@
   "name": "orbit-db-pubsub",
   "version": "0.6.1",
   "description": "Message propagation module for orbit-db",
-  "main": "index.js",
+  "type": "module",
+  "main": "./src/index.js",
   "homepage": "https://github.com/orbitdb/orbit-db-pubsub",
   "bugs": "https://github.com/orbitdb/orbit-db-pubsub/issues",
   "keywords": [
@@ -11,8 +12,8 @@
     "pubsub"
   ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "standard"
+    "lint": "standard",
+    "lint:fix": "standard --fix"
   },
   "author": "Haad",
   "contributors": [
@@ -24,7 +25,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "ipfs-pubsub-peer-monitor": "~0.0.5",
+    "ipfs-pubsub-peer-monitor": "github:haydenyoung/ipfs-pubsub-peer-monitor#esm",
     "logplease": "~1.2.14",
     "p-series": "^1.1.0"
   },
