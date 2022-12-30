@@ -92,7 +92,7 @@ export default class IPFSPubsub {
     let content
 
     // Get the topic
-    const topicId = message.topic
+    const topicId = message.topicIDs[0]
     try {
       content = JSON.parse(Buffer.from(message.data).toString())
     } catch {
