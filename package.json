@@ -25,7 +25,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "ipfs-pubsub-peer-monitor": "github:haydenyoung/ipfs-pubsub-peer-monitor#esm",
+    "ipfs-pubsub-peer-monitor": "github:orbitdb/ipfs-pubsub-peer-monitor#esm",
     "logplease": "~1.2.14",
     "p-series": "^1.1.0"
   },
