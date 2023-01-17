@@ -69,7 +69,7 @@ export default class IPFSPubsub {
     if (this._subscriptions[topic] && this._ipfs.pubsub) {
       let payload
       // Buffer should be already serialized. Everything else will get serialized as json if not buffer, string.
-      if (Buffer.isBuffer(message) | typeof message === 'string') {
+      if (Buffer.isBuffer(message) || typeof message === 'string') {
         payload = message
       } else {
         payload = JSON.stringify(message)
@@ -86,13 +86,16 @@ export default class IPFSPubsub {
 
   async _handleMessage (message) {
     // Don't process our own messages
-    if (message.from === this._id) { return }
+    if (String(message.from) === this._id) { return }
 
     // Get the message content and a subscription
     let content
 
     // Get the topic
-    const topicId = message.topicIDs[0]
+    // message.topic is the field used in the latest version of pubsub
+    // message.topicIDs array is the field used in older versions of pubsub
+    const topicId = message.topic ? message.topic : message.topicIDs[0]
+
     try {
       content = JSON.parse(Buffer.from(message.data).toString())
     } catch {
